@@ -156,9 +156,9 @@ streq (char * a, char * b)
 static void
 usage (char * name)
 {
-    printf ("%s: [-d <id>]\n", name);
+    printf ("%s: [-f <id>]\n", name);
     printf ("\tlist:   %s\n", name);
-    printf ("\tdelete: %s -d <num>\n", name);
+    printf ("\tdelete: %s -f <num>\n", name);
     printf ("\tcreate: %s <str>\n", name);
 }
 
@@ -169,10 +169,10 @@ main (int argc, char * argv[])
     if (argc == 1) {
         rc = list ();
         check (rc == 0, "Failed to list");
-    } else if (argc == 2 && streq (argv[1], "-d")) {
+    } else if (argc == 2 && streq (argv[1], "-f")) {
         rc = delete (1);
         check (rc == 0, "Failed to finish first task");
-    } else if (argc == 3 && streq (argv[1], "-d")) {
+    } else if (argc == 3 && streq (argv[1], "-f")) {
         int id = atoi (argv[2]);
         rc = delete (id);
         check (rc == 0, "Failed to delete %d", id);
