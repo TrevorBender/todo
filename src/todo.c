@@ -172,13 +172,19 @@ main (int argc, char * argv[])
     } else if (argc == 2 && streq (argv[1], "-f")) {
         rc = delete (1);
         check (rc == 0, "Failed to finish first task");
+        rc = list ();
+        check (rc == 0, "Failed to list");
     } else if (argc == 3 && streq (argv[1], "-f")) {
         int id = atoi (argv[2]);
         rc = delete (id);
         check (rc == 0, "Failed to delete %d", id);
+        rc = list ();
+        check (rc == 0, "Failed to list");
     } else if (argc >= 2 && argv[1][0] != '-') {
         rc = create (argc, argv);
         check (rc == 0, "Failed to create new item");
+        rc = list ();
+        check (rc == 0, "Failed to list");
     } else {
         usage (basename (argv[0]));
         return 1;
