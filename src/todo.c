@@ -9,7 +9,31 @@
 
 #define UNUSED(x) (void)(x)
 
-static char * filename = "/home/trevor/todo.txt";
+static char * filename;
+
+static int
+init_filename (void)
+{
+    static char * todo_file = "/todo.txt";
+
+    char * home_dir = getenv ("TODO_DIR");
+    if (!home_dir) {
+        home_dir = getenv ("HOME");
+    }
+    check (home_dir, "Failed to get HOME");
+    size_t home_dir_len = strlen (home_dir);
+
+    filename = malloc (home_dir_len + strlen(todo_file) + 1);
+    check_mem (filename);
+
+    memcpy (filename, home_dir, home_dir_len);
+    memcpy (filename + home_dir_len, todo_file, strlen (todo_file));
+    filename[home_dir_len + strlen (todo_file)] = '\0';
+
+    return 0;
+error:
+    return -1;
+}
 
 /**
  * Get the file with the specified mode.
@@ -166,6 +190,10 @@ int
 main (int argc, char * argv[])
 {
     int rc;
+
+    rc = init_filename ();
+    check (rc == 0, "failed to get filename");
+
     if (argc == 1) {
         rc = list ();
         check (rc == 0, "Failed to list");
@@ -191,6 +219,7 @@ main (int argc, char * argv[])
     }
 
     return 0;
+
 error:
     return 2;
 }
