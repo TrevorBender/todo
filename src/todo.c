@@ -9,13 +9,15 @@
 
 #define UNUSED(x) (void)(x)
 
+static char * todo_file = "/todo.txt";
+static char * tmp_file = "/todo.tmp.txt";
 static char * filename;
+static char * tmp_filename;
 
-static int
-init_filename (void)
+static char *
+init_filename (char * file)
 {
-    static char * todo_file = "/todo.txt";
-
+    char * filename;
     char * home_dir = getenv ("TODO_DIR");
     if (!home_dir) {
         home_dir = getenv ("HOME");
@@ -23,16 +25,16 @@ init_filename (void)
     check (home_dir, "Failed to get HOME");
     size_t home_dir_len = strlen (home_dir);
 
-    filename = malloc (home_dir_len + strlen(todo_file) + 1);
+    filename = malloc (home_dir_len + strlen(file) + 1);
     check_mem (filename);
 
     memcpy (filename, home_dir, home_dir_len);
-    memcpy (filename + home_dir_len, todo_file, strlen (todo_file));
-    filename[home_dir_len + strlen (todo_file)] = '\0';
+    memcpy (filename + home_dir_len, file, strlen (file));
+    filename[home_dir_len + strlen (file)] = '\0';
 
-    return 0;
+    return filename;
 error:
-    return -1;
+    return NULL;
 }
 
 /**
@@ -102,10 +104,11 @@ delete (int line)
     int fd = -1;
     FILE * in = NULL, * out = NULL;
 
-    char * new_filename = "/home/trevor/todo.txt.new";
+    char * new_filename = tmp_filename;
 
     fd = open (new_filename, O_CREAT, S_IRUSR | S_IWUSR);
     check (fd != -1, "Failed to create new file");
+    close (fd);
 
     out = fopen (new_filename, "w");
     check (out, "Failed to open tmp file");
@@ -191,8 +194,10 @@ main (int argc, char * argv[])
 {
     int rc;
 
-    rc = init_filename ();
-    check (rc == 0, "failed to get filename");
+    filename = init_filename (todo_file);
+    check (filename, "failed to get filename");
+    tmp_filename = init_filename (tmp_file);
+    check (tmp_filename, "failed to get tmp filename");
 
     if (argc == 1) {
         rc = list ();
