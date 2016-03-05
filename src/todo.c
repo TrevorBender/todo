@@ -185,7 +185,7 @@ usage (char * name)
 {
     printf ("%s: [-f <id>]\n", name);
     printf ("\tlist:   %s\n", name);
-    printf ("\tdelete: %s -f <num>\n", name);
+    printf ("\tfinish: %s -f <num>\n", name);
     printf ("\tcreate: %s <str>\n", name);
 }
 
@@ -207,6 +207,8 @@ main (int argc, char * argv[])
         check (rc == 0, "Failed to finish first task");
         rc = list ();
         check (rc == 0, "Failed to list");
+    } else if (argc == 2 && (streq (argv[1], "-?") || streq (argv[1], "-h"))) {
+        usage (basename (argv[0]));
     } else if (argc == 3 && streq (argv[1], "-f")) {
         int id = atoi (argv[2]);
         rc = delete (id);
